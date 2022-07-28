@@ -670,6 +670,7 @@ div.bg-success {
 </style>
 
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Alegreya+Sans+SC:ital,wght@0,100;0,300;0,400;0,500;0,700;0,800;0,900;1,100;1,300;1,400;1,500;1,700;1,800;1,900&display=swap');
 html .main-nav {
     position: fixed;
     flex-direction: column ;
@@ -692,11 +693,12 @@ html .navbar {
   list-style: none;
 }
 
-html .navbar.navbar-expand li:not(.ml-3)::before {
-  display: inline-block;
-  content: url('./assets/base/note.png');
-  margin-right: 10px;
-  transform: translateY(5px);
+li[data-v-b8ce8636] a {
+  margin-bottom: 0 !important;
+}
+
+svg[data-v-b8ce8636] {
+  transform: translateY(-10px);
 }
 
 .root.main-font .character-name {
@@ -706,7 +708,7 @@ html .navbar.navbar-expand li:not(.ml-3)::before {
     background-clip: text;
     text-fill-color: transparent;
     font-weight: 700;
-        font-family: 'Roboto', sans-serif;
+    font-family: 'Alegreya Sans SC', sans-serif;
 }
 
 .character-list .character {
@@ -798,6 +800,10 @@ html #__BVID__66__BV_toggle_ {
   height: 68% !important;
 }
 
+span[data-v-ae64b8e2] {
+  border: none !important;
+}
+
 .character .name.black-outline {
   background: linear-gradient(177.39deg, #EEC14E 42.02%, rgba(189, 48, 42, 0.51) 142.62%);
   -webkit-background-clip: text;
@@ -805,6 +811,12 @@ html #__BVID__66__BV_toggle_ {
   background-clip: text;
   text-fill-color: transparent;
   text-shadow: 0px 0px 13px #721818;
+  transform: translateY(-5px);
+  font-family: 'Alegreya Sans SC', sans-serif;
+}
+
+.score-id-container {
+  transform: translateY(-5px);
 }
 
 .character .black-outline {
@@ -818,11 +830,21 @@ html #__BVID__66__BV_toggle_ {
 
 html .hell-balance-display {
   position: fixed;
+  border: 1px solid #EEC14E;
+  border-radius: 8px;
   top: 10px;
-  right: 0;
+  right: 15px;
   justify-content: flex-end;
   padding: 20px 75px 20px 20px;
   background: linear-gradient(90deg, #250000 0%, #170000 100%);
+}
+
+button[data-v-45fa2b1e] {
+  min-width: 265px;
+  padding: 20px;
+  line-height: 20px;
+  height: auto;
+  margin-right: 5px;
 }
 
 body {
@@ -863,5 +885,231 @@ html .nav-link {
 
 html .navbar-nav.view-links {
   flex-direction: column;
+}
+
+/*Stake*/
+.stake-select-list .stake-select-item {
+  background: rgba(16, 16, 16, 0.5);
+  border: 1px solid #EEC14E;
+  border-radius: 8px;
+}
+
+.stake-select-list .stake-select-item .container {
+  background: rgba(16, 16, 16, 0.5);
+  padding: 25px;
+}
+
+.stake-select-list .stake-select-item .stake-data-table {
+  margin-top: 18px;
+}
+
+.stake-select-list .stake-select-item .stake-data-table tr {
+  display: flex;
+  margin-bottom: 10px;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 7px;
+}
+
+.stake-select-list .stake-select-item .stake-select-button {
+  width: 113px;
+  height: 40px;
+  text-align: center;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 20px;
+  color: #EEC14E;
+  background: rgba(114, 13, 13, 0.3);
+  border: 1px solid #EEC14E;
+  border-radius: 6px;
+}
+
+.stake-select-list .stake-select-item .stake-select-button svg {
+  margin-left: 5px;
+}
+
+.stake.staking .staker {
+  background: rgba(16, 16, 16, 0.6);
+  border: 1px solid #EEC14E;
+  border-radius: 8px;
+  padding: 20px;
+}
+
+.stake.staking .staker .chooser[data-v-1f432ef1] {
+  background-color: transparent;
+}
+
+.stake.staking .staker .navbar-staking {
+  border: none;
+}
+
+.stake.staking .staker .navbar-staking .switch {
+  background: rgba(57, 57, 57, 0.3);
+  border-radius: 23px;
+  height: 40px;
+  font-weight: 700;
+  border: 1px solid transparent;
+  transition: all .5s ease-in-out;
+}
+
+.stake.staking .staker .navbar-staking {
+  gap: 8px;
+}
+
+.stake.staking .staker .navbar-staking .switch.switch_active {
+  background: rgba(57, 57, 57, 0.3);
+  border-color: #EEC14E;
+  border-radius: 23px;
+}
+
+.stake.staking .staker .stakePage.medium-dark-bg {
+  background: none;
+  margin: 0;
+  width: 100%;
+}
+
+.stake.staking .staker {
+  min-height: fit-content;
+}
+
+.stake.staking .staker .input {
+  background-color: transparent;
+  height: 120px;
+}
+
+.stake.staking .token-amount-input {
+  width: 50%;
+}
+
+.stake.staking .ant-col {
+  font-weight: 600;
+  font-size: 20px;
+  line-height: 27px;
+  letter-spacing: 0.03em;
+  color: #FFFFFF;
+}
+
+.stake.staking .balance {
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 21px;
+  letter-spacing: 0.03em;
+  color: #FFFFFF;
+  text-decoration: none;
+}
+
+.stake.staking .token-amount-input {
+  font-weight: 600;
+  font-size: 36px;
+  line-height: 48px;
+  letter-spacing: 0.03em;
+  color: #989898;
+}
+
+.stake.staking .stakePage button {
+  width: 100%;
+  height: 60px;
+}
+
+.filters {
+  margin-bottom: 50px;
+}
+
+.filters strong {
+  display: block;
+  color: #fff;
+  margin-bottom: 5px;
+}
+
+.filters .form-control {
+  height: 35px;
+  background: rgba(1, 1, 1, 0.3);
+  border: 1px solid #FFFFFF;
+  border-radius: 4px;
+  flex: none;
+  order: 0;
+  flex-grow: 0;
+  color: #fff;
+}
+
+.filters .show-reforged {
+  margin-top: 30px;
+}
+
+.weapon-grid .glow-container.glow-2 {
+    background: rgba(29, 29, 29, 0.3);
+    border: 1px solid #EEC14E;
+    border-radius: 4px;
+}
+
+.weapon-grid .weapon-icon-wrapper {
+  width: 243px;
+  height: 287px;
+}
+
+.weapon-grid .weapon {
+  width: 243px;
+  background: rgba(29, 29, 29, 0.3);
+}
+
+.weapon-grid .name {
+  background: linear-gradient(177.39deg, #EEC14E 42.02%, rgba(189, 48, 42, 0.51) 142.62%);
+  background-clip: text;
+  text-fill-color: transparent;
+  text-shadow: 0px 0px 13px #721818;
+  transform: translateY(-5px);
+  font-weight: 700;
+  font-size: 18px;
+  font-family: 'Alegreya Sans SC', sans-serif;
+  margin-bottom: 20px;
+}
+
+.weapon-grid .placeholder {
+  max-width: 180px;
+  max-height: 180px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.8);
+}
+
+.weapon-grid .trait,
+.weapon-grid .stats {
+  padding-left: 10px;
+}
+
+.weapon-grid .id {
+  padding-right: 10px;
+}
+
+.header-row h1 {
+  background: linear-gradient(177.39deg, #EEC14E 42.02%, rgba(189, 48, 42, 0.51) 142.62%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-fill-color: transparent;
+  font-weight: 700;
+}
+
+.nav.nav-tabs.nav-justified {
+  background: rgba(57, 57, 57, 0.1);
+  margin-bottom: 20px;
+}
+
+.nav.nav-tabs.nav-justified li .nav-link {
+  border: 1px solid transparent !important;
+  border-radius: 6px !important;
+  transition: all .5s ease-in-out;
+}
+
+.nav.nav-tabs.nav-justified li .nav-link.active,
+.nav.nav-tabs.nav-justified li .nav-link.active:hover {
+  background: rgba(57, 57, 57, 0.3);
+  border-color: #EEC14E !important;
+  color: #EEC14E !important;
+}
+
+.row.button-row {
+  margin-bottom: 20px;
 }
 </style>
