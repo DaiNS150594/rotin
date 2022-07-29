@@ -1,0 +1,189 @@
+<template>
+  <div class="body main-font">
+    <b-navbar-nav>
+      <b-icon-exclamation-circle-fill class="rewards-claimable-icon" scale="1.2"
+      variant="success" :hidden="!canClaimTokens && !canClaimXp" v-tooltip.bottom="'Rewards ready to claim!'" />
+
+      <b-nav-item-dropdown right>
+        <template #button-content>
+          Rewards
+        </template>
+
+        <b-dropdown-item
+          :disabled="!canClaimTokens"
+          @click="claimHell(ClaimStage.WaxBridge)" class="gtag-link-others" tagname="claim_hell">
+            HELL
+            <div class="pl-3">{{ formattedHellReward }}</div>
+            <div class="pl-3">
+              Early withdraw tax: {{ formattedRewardsClaimTax }}
+              <b-icon-question-circle class="centered-icon" scale="0.8" v-tooltip.bottom="'Tax is being reduced by 1% per day'"/>
+            </div>
+            <div class="pl-3">Time since last withdraw: n/a</div>
+        </b-dropdown-item>
+
+        <b-dropdown-item
+          :disabled="!canClaimXp"
+          @click="onClaimXp" class="gtag-link-others" tagname="claim_xp">
+            XP <div class="pl-3" v-for="(reward, index) in formattedXpRewards" :key="index">{{ reward }}</div>
+          </b-dropdown-item>
+      </b-nav-item-dropdown>
+    </b-navbar-nav>
+
+    <b-modal class="centered-modal" ref="need-gas-modal" title="Need Gas?"
+      @ok="claimHell(ClaimStage.Stake)" ok-title="Next" @cancel="$router.push({ name: 'portal' })" cancel-title="Go to WAX Bridge" >
+        Need Gas? Try our WAX Bridge, which will pay you .5% under market rate to sell your WAX for AVAX!
+    </b-modal>
+    <b-modal class="centered-modal" ref="stake-suggestion-modal" title="Stake Hell"
+      @ok="$router.push({ name: 'select-stake-type' })" ok-only ok-title="Go to Stake" >
+        If you stake your HELL now, we will give you a 10% bonus in HELL that you can use in-game right away!
+      <a href="#" @click="claimHell(ClaimStage.Claim)"> <br>No thanks, I'd rather {{ (this.rewardsClaimTaxAsFactorBN > 0)?"pay " +
+        this.formattedTaxAmount + " in taxes and " : ""  }}forfeit my bonus </a>
+    </b-modal>
+    <b-modal class="centered-modal" ref="claim-confirmation-modal" title="Claim Hell" ok-title="I am sure"
+      @ok="onClaimTokens()"> You are about to {{ (this.rewardsClaimTaxAsFactorBN > 0)?"pay " + formattedRewardsClaimTax +
+      " tax for early withdrawal, costing you " + this.formattedTaxAmount + " HELL. You will also " : "" }}
+      miss out on {{formattedBonusLost}} bonus HELL. Are you sure
+      you wish to continue? <b>This action cannot be undone.</b>
+    </b-modal>
+  </div>
+</template>
+
+<script lang="ts">
+import Vue from 'vue';
+import { Accessors } from 'vue/types/options';
+import { mapActions, mapGetters, mapState } from 'vuex';
+import BN from 'bignumber.js';
+import Web3 from 'web3';
+import { getCharacterNameFromSeed } from '../../character-name';
+import { ICharacter } from '@/interfaces';
+
+interface StoreMappedState {
+  hellRewards: string;
+  xpRewards: Record<string, string>;
+  ownedCharacterIds: string[];
+  directStakeBonusPercent: number;
+}
+
+interface StoreMappedGetters {
+  ownCharacters: ICharacter[];
+  maxRewardsClaimTaxAsFactorBN: BN;
+  rewardsClaimTaxAsFactorBN: BN;
+}
+
+interface StoreMappedActions {
+  claimTokenRewards(): Promise<void>;
+  claimXpRewards(): Promise<void>;
+}
+
+enum ClaimStage {
+  WaxBridge = 0,
+  Stake = 1,
+  Claim = 2
+}
+
+export default Vue.extend({
+  data() {
+    return {
+      ClaimStage
+    };
+  },
+
+  computed: {
+    ...(mapState(['hellRewards', 'xpRewards', 'ownedCharacterIds', 'directStakeBonusPercent']) as Accessors<StoreMappedState>),
+    ...(mapGetters([
+      'ownCharacters', 'maxRewardsClaimTaxAsFactorBN', 'rewardsClaimTaxAsFactorBN'
+    ]) as Accessors<StoreMappedGetters>),
+
+    formattedHellReward(): string {
+      const hellRewards = Web3.utils.fromWei(this.hellRewards, 'ether');
+      return `${new BN(hellRewards).toFixed(4)}`;
+    },
+
+    xpRewardsForOwnedCharacters(): string[] {
+      return this.ownedCharacterIds.map(charaId => this.xpRewards[charaId] || '0');
+    },
+
+    formattedXpRewards(): string[] {
+      return this.xpRewardsForOwnedCharacters.map((xp, i) => {
+        if(!this.ownCharacters[i]) return xp;
+
+        return `${getCharacterNameFromSeed(this.ownCharacters[i].id)} ${xp}`;
+      });
+    },
+
+    canClaimTokens(): boolean {
+      if(new BN(this.hellRewards).lte(0)) {
+        return false;
+      }
+
+      return true;
+    },
+
+    formattedTaxAmount(): string {
+      const hellRewards = Web3.utils.fromWei((parseFloat(this.hellRewards)* parseFloat(String(this.rewardsClaimTaxAsFactorBN))).toString(), 'ether');
+      return `${new BN(hellRewards).toFixed(4)}`;
+    },
+
+    formattedBonusLost(): string {
+      const hellLost = Web3.utils.fromWei((parseFloat(this.hellRewards)*this.directStakeBonusPercent/100).toString(), 'ether');
+      return `${new BN(hellLost).toFixed(4)}`;
+    },
+
+    formattedRewardsClaimTax(): string {
+      const frac =
+        this.hellRewards === '0'
+          ? this.maxRewardsClaimTaxAsFactorBN
+          : this.rewardsClaimTaxAsFactorBN;
+
+      return `${frac.multipliedBy(100).decimalPlaces(0, BN.ROUND_HALF_UP)}%`;
+    },
+
+    canClaimXp(): boolean {
+      const allXpsAreZeroOrLess = this.xpRewardsForOwnedCharacters.every(xp => new BN(xp).lte(0));
+      if(allXpsAreZeroOrLess) {
+        return false;
+      }
+
+      return true;
+    }
+  },
+
+  methods: {
+    ...(mapActions(['addMoreHell', 'claimTokenRewards', 'claimXpRewards']) as StoreMappedActions),
+
+    async onClaimTokens() {
+      if(this.canClaimTokens) {
+        await this.claimTokenRewards();
+      }
+    },
+
+    async onClaimXp() {
+      if(this.canClaimXp) {
+        await this.claimXpRewards();
+      }
+    },
+
+    async claimHell(stage: ClaimStage) {
+      if(stage === ClaimStage.WaxBridge) {
+        (this.$refs['need-gas-modal'] as any).show();
+      }
+      if(stage === ClaimStage.Stake) {
+        (this.$refs['stake-suggestion-modal'] as any).show();
+      }
+      if(stage === ClaimStage.Claim) {
+        (this.$refs['stake-suggestion-modal'] as any).hide();
+        (this.$refs['claim-confirmation-modal'] as any).show();
+      }
+    }
+  }
+});
+</script>
+
+<style scoped>
+
+.rewards-claimable-icon {
+  margin-right: 5px;
+  align-self: center;
+}
+
+</style>
